@@ -138,30 +138,30 @@
             'HYBRID': 'truck'
         };
 
-        const COLORS = {
-            'GUDANG': '#3498db',
-            'CP SUKA': '#e67e22',
-            'HYBRID': '#2ecc71'
-        };
+      const COLORS = {
+    'GUDANG': '#3498db',
+    'CP SUKA': '#e67e22',
+    'HYBRID': '#2ecc71'
+};
 
-        async function fetchData() {
-            try {
-                const API_URL = 'https://script.google.com/macros/s/AKfycbyNEpeZ2PUe_DIeKFrziJBaWOFrWniyKaza7yngGCSjLcxz_a525N8ct8GVMf2G14op/exec';
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-                
-                renderData(data);
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('loading').innerHTML = 
-                    '<p style="color: red">Gagal memuat data. Silakan refresh halaman.</p>';
-            }
-        }
+async function fetchData() {
+    try {
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyq_wsHOT3TI8-Tk31YiA_vPDAl5j_cIci0ztoV1AgAcnWay1DEzrEBoo1jrY7DkdLo/exec';
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+        
+        renderData(data);
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('loading').innerHTML = 
+            '<p style="color: red">Gagal memuat data. Silakan refresh halaman.</p>';
+    }
+}
 
-       function renderData(data) {
+function renderData(data) {
     const container = document.getElementById('divisions-container');
     
     for(const [divisionName, units] of Object.entries(data)) {
@@ -172,7 +172,7 @@
         divisionCard.className = 'division-card';
         divisionCard.innerHTML = `
             <div class="card-header">
-                <i class="fas fa-${DIVISION_ICONS[divisionName.toUpperCase()]}"></i>
+                <i class="fas fa-truck"></i> <!-- Icon truk untuk semua divisi -->
                 <h2>${formattedDivisionName.toUpperCase()}</h2>
             </div>
             ${units.map(unit => `
@@ -191,6 +191,7 @@
         container.appendChild(divisionCard);
     }
 }
+
         // Initial load
         fetchData();
     </script>
