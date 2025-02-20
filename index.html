@@ -167,11 +167,28 @@
             50% { transform: translateY(-20px); }
         }
 
-        @media (max-width: 768px) {
-            .division-group {
-                grid-template-columns: 1fr;
-            }
-        }
+       /* CSS untuk mode desktop */
+@media (min-width: 768px) {
+    .division-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .division-card {
+        margin-bottom: 1.5rem;
+    }
+
+    .division-card.active {
+        grid-column: 1 / -1; /* Memaksa card aktif mengambil lebar penuh */
+    }
+
+    .division-card.active .units-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -218,7 +235,7 @@
             }
         }
 
-      function renderData(data) {
+  function renderData(data) {
     const container = document.getElementById('divisions-container');
     
     for(const [divisionName, units] of Object.entries(data)) {
