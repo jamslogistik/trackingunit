@@ -1,137 +1,196 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vehicle Tracking System</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-    
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-      min-height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Tracking System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+        }
 
-    .glass-card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    .glass-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f6fa;
+            color: var(--primary);
+        }
 
-    .neon-text {
-      text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-    .gradient-btn {
-      background: linear-gradient(45deg, #00c6ff, #0072ff);
-      position: relative;
-      overflow: hidden;
-    }
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
 
-    .gradient-btn:hover::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.1);
-    }
-  </style>
+        .division-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .division-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .division-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .unit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .unit-item:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .track-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .track-btn:hover {
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .division-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-<body class="text-gray-100">
-  <div class="container mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold mb-2 neon-text">
-        <i class="fas fa-satellite-dish mr-3"></i>Real-Time Vehicle Tracking
-      </h1>
-      <p class="text-gray-400">Monitor semua unit kendaraan secara live</p>
-    </div>
-
-    <!-- Filter Section -->
-    <div class="flex flex-wrap gap-4 mb-8 justify-center">
-      <button onclick="filterDivision('GUDANG')" class="glass-card px-6 py-2 hover:bg-blue-500/20">
-        <i class="fas fa-warehouse mr-2"></i>Gudang
-      </button>
-      <button onclick="filterDivision('CP SUKA')" class="glass-card px-6 py-2 hover:bg-pink-500/20">
-        <i class="fas fa-heart mr-2"></i>CP Suka
-      </button>
-      <button onclick="filterDivision('HYBRID')" class="glass-card px-6 py-2 hover:bg-green-500/20">
-        <i class="fas fa-leaf mr-2"></i>Hybrid
-      </button>
-    </div>
-
-    <!-- Loading Indicator -->
-    <div id="loading" class="text-center text-2xl">
-      <i class="fas fa-spinner fa-spin"></i> Memuat data...
-    </div>
-
-    <!-- Data Container -->
-    <div id="data" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
-  </div>
-
-<script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbwpYK5zJvEFs5WwiAO3QOyvFt4k-AulBJyUEfzyaplcIABB39uSKabwc-zQWCbG7CSs/exec';
-
-  // Card Template
-  const createCard = (unit, link) => `
-    <div class="glass-card p-6">
-      <div class="flex items-center mb-4">
-        <div class="bg-blue-500/20 p-3 rounded-full">
-          <i class="fas fa-car-side text-xl text-blue-400"></i>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-car-side"></i> Vehicle Tracking System</h1>
+            <p>Real-time monitoring kendaraan perusahaan</p>
         </div>
-        <h2 class="text-xl font-semibold ml-3">${unit}</h2>
-      </div>
-      <a href="${link}" target="_blank" 
-         class="gradient-btn px-6 py-2 rounded-full font-medium flex items-center justify-center gap-2">
-        <i class="fas fa-map-marked-alt"></i>
-        Live Tracking
-      </a>
+
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Memuat data...
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="division-group" id="divisions-container"></div>
+        </div>
     </div>
-  `;
 
-  // Fetch Data
-  async function fetchData() {
-    try {
-      const response = await fetch(API_URL);
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error:', error);
-      return [];
-    }
-  }
+    <script>
+        const DIVISION_ICONS = {
+            'GUDANG': 'warehouse',
+            'CP SUKA': 'truck-moving',
+            'HYBRID': 'charging-station'
+        };
 
-  // Filter Data by Division
-  async function filterDivision(division) {
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('data').innerHTML = '';
-    
-    const data = await fetchData();
-    const container = document.getElementById('data');
-    
-    data.forEach(([unit, devisi, link]) => {
-      if (devisi === division) {
-        container.innerHTML += createCard(unit, link);
-      }
-    });
-    
-    document.getElementById('loading').style.display = 'none';
-  }
+        const COLORS = {
+            'GUDANG': '#3498db',
+            'CP SUKA': '#e67e22',
+            'HYBRID': '#2ecc71'
+        };
 
-  // Initial Load
-  window.onload = () => filterDivision('GUDANG');
-</script>
+        async function fetchData() {
+            try {
+                const API_URL = 'https://script.google.com/macros/s/AKfycbyNEpeZ2PUe_DIeKFrziJBaWOFrWniyKaza7yngGCSjLcxz_a525N8ct8GVMf2G14op/exec';
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                
+                renderData(data);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').innerHTML = 
+                    '<p style="color: red">Gagal memuat data. Silakan refresh halaman.</p>';
+            }
+        }
+
+        function renderData(data) {
+            const container = document.getElementById('divisions-container');
+            
+            for(const [divisionName, units] of Object.entries(data)) {
+                const divisionCard = document.createElement('div');
+                divisionCard.className = 'division-card';
+                divisionCard.innerHTML = `
+                    <div class="card-header">
+                        <i class="fas fa-${DIVISION_ICONS[divisionName.toUpperCase()]}"></i>
+                        <h2>${divisionName.toUpperCase()}</h2>
+                    </div>
+                    ${units.map(unit => `
+                        <div class="unit-item">
+                            <span>${unit.name}</span>
+                            <button 
+                                class="track-btn" 
+                                onclick="window.open('${unit.link}', '_blank')"
+                                style="background: ${COLORS[divisionName.toUpperCase()]}">
+                                <i class="fas fa-map-marker-alt"></i> Track
+                            </button>
+                        </div>
+                    `).join('')}
+                `;
+                
+                container.appendChild(divisionCard);
+            }
+        }
+
+        // Initial load
+        fetchData();
+    </script>
 </body>
 </html>
