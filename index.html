@@ -161,34 +161,36 @@
             }
         }
 
-        function renderData(data) {
-            const container = document.getElementById('divisions-container');
-            
-            for(const [divisionName, units] of Object.entries(data)) {
-                const divisionCard = document.createElement('div');
-                divisionCard.className = 'division-card';
-                divisionCard.innerHTML = `
-                    <div class="card-header">
-                        <i class="fas fa-${DIVISION_ICONS[divisionName.toUpperCase()]}"></i>
-                        <h2>${divisionName.toUpperCase()}</h2>
-                    </div>
-                    ${units.map(unit => `
-                        <div class="unit-item">
-                            <span>${unit.name}</span>
-                            <button 
-                                class="track-btn" 
-                                onclick="window.open('${unit.link}', '_blank')"
-                                style="background: ${COLORS[divisionName.toUpperCase()]}">
-                                <i class="fas fa-map-marker-alt"></i> Track
-                            </button>
-                        </div>
-                    `).join('')}
-                `;
-                
-                container.appendChild(divisionCard);
-            }
-        }
-
+       function renderData(data) {
+    const container = document.getElementById('divisions-container');
+    
+    for(const [divisionName, units] of Object.entries(data)) {
+        // Replace underscore with space
+        const formattedDivisionName = divisionName.replace(/_/g, ' ');
+        
+        const divisionCard = document.createElement('div');
+        divisionCard.className = 'division-card';
+        divisionCard.innerHTML = `
+            <div class="card-header">
+                <i class="fas fa-${DIVISION_ICONS[divisionName.toUpperCase()]}"></i>
+                <h2>${formattedDivisionName.toUpperCase()}</h2>
+            </div>
+            ${units.map(unit => `
+                <div class="unit-item">
+                    <span>${unit.name}</span>
+                    <button 
+                        class="track-btn" 
+                        onclick="window.open('${unit.link}', '_blank')"
+                        style="background: ${COLORS[divisionName.toUpperCase()]}">
+                        <i class="fas fa-map-marker-alt"></i> Track
+                    </button>
+                </div>
+            `).join('')}
+        `;
+        
+        container.appendChild(divisionCard);
+    }
+}
         // Initial load
         fetchData();
     </script>
