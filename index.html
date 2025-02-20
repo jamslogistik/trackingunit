@@ -61,6 +61,9 @@
 
     <!-- Filter Section -->
     <div class="flex flex-wrap gap-4 mb-8 justify-center">
+      <button onclick="showAllData()" class="glass-card px-6 py-2 hover:bg-blue-500/20">
+        <i class="fas fa-list mr-2"></i>Tampilkan Semua
+      </button>
       <button onclick="filterDivision('GUDANG')" class="glass-card px-6 py-2 hover:bg-blue-500/20">
         <i class="fas fa-warehouse mr-2"></i>Gudang
       </button>
@@ -78,59 +81,74 @@
     </div>
 
     <!-- Data Container -->
-    <div id="data" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+    <div id="data" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
   </div>
 
-<script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxphVmt3qGMhKkBsVlC5614ltdIkIxJfXeLzSi3bBI6IG2goucm28tAfX-lbi42X9As/exec';
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbx1zFpZS9HLwfBjqo4NHN1gC3ewEfdbfyYA5oHKo8KjepOUuEfctm8_k-hdassoP_KG/exec';
 
-  // Card Template
-  const createCard = (unit, link) => `
-    <div class="glass-card p-6">
-      <div class="flex items-center mb-4">
-        <div class="bg-blue-500/20 p-3 rounded-full">
-          <i class="fas fa-car-side text-xl text-blue-400"></i>
+    // Card Template
+    const createCard = (unit, link) => `
+      <div class="glass-card p-6">
+        <div class="flex items-center mb-4">
+          <div class="bg-blue-500/20 p-3 rounded-full">
+            <i class="fas fa-car-side text-xl text-blue-400"></i>
+          </div>
+          <h2 class="text-xl font-semibold ml-3">${unit}</h2>
         </div>
-        <h2 class="text-xl font-semibold ml-3">${unit}</h2>
+        <a href="${link}" target="_blank" 
+           class="gradient-btn px-6 py-2 rounded-full font-medium flex items-center justify-center gap-2">
+          <i class="fas fa-map-marked-alt"></i>
+          Live Tracking
+        </a>
       </div>
-      <a href="${link}" target="_blank" 
-         class="gradient-btn px-6 py-2 rounded-full font-medium flex items-center justify-center gap-2">
-        <i class="fas fa-map-marked-alt"></i>
-        Live Tracking
-      </a>
-    </div>
-  `;
+    `;
 
-  // Fetch Data
-  async function fetchData() {
-    try {
-      const response = await fetch(API_URL);
-      return await response.json();
-    } catch (error) {
-      console.error('Error:', error);
-      return [];
-    }
-  }
-
-  // Filter Data by Division
-  async function filterDivision(division) {
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('data').innerHTML = '';
-    
-    const data = await fetchData();
-    const container = document.getElementById('data');
-    
-    data.forEach(([unit, devisi, link]) => {
-      if (devisi === division) {
-        container.innerHTML += createCard(unit, link);
+    // Fetch Data
+    async function fetchData() {
+      try {
+        const response = await fetch(API_URL);
+        return await response.json();
+      } catch (error) {
+        console.error('Error:', error);
+        return [];
       }
-    });
-    
-    document.getElementById('loading').style.display = 'none';
-  }
+    }
 
-  // Initial Load
-  window.onload = () => filterDivision('GUDANG');
-</script>
+    // Filter Data by Division
+    async function filterDivision(division) {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('data').innerHTML = '';
+      
+      const data = await fetchData();
+      const container = document.getElementById('data');
+      
+      data.forEach(([unit, devisi, link]) => {
+        if (devisi === division) {
+          container.innerHTML += createCard(unit, link);
+        }
+      });
+      
+      document.getElementById('loading').style.display = 'none';
+    }
+
+    // Show All Data
+    async function showAllData() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('data').innerHTML = '';
+
+      const data = await fetchData();
+      const container = document.getElementById('data');
+
+      data.forEach(([unit, devisi, link]) => {
+        container.innerHTML += createCard(unit, link);
+      });
+
+      document.getElementById('loading').style.display = 'none';
+    }
+
+    // Initial Load
+    window.onload = () => showAllData();
+  </script>
 </body>
 </html>
