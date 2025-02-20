@@ -6,9 +6,130 @@
     <title>Vehicle Tracking System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* ... (CSS sebelumnya tetap sama) ... */
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+        }
 
-        /* New Loading Animation */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f6fa;
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .division-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .division-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .division-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .card-header:hover {
+            background: #e9ecef;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+
+        .division-card.active .chevron {
+            transform: rotate(180deg);
+        }
+
+        .units-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .division-card.active .units-container {
+            max-height: 1000px;
+        }
+
+        .unit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .division-card.active .unit-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .track-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .track-btn:hover {
+            opacity: 0.9;
+        }
+
         .loading-container {
             position: fixed;
             top: 0;
@@ -32,7 +153,7 @@
             position: absolute;
             width: 16px;
             height: 16px;
-            background: #3498db;
+            background: var(--secondary);
             border-radius: 50%;
             animation: loader 1.2s linear infinite;
         }
@@ -46,43 +167,10 @@
             50% { transform: translateY(-20px); }
         }
 
-        /* Animasi Divisi */
-        .units-container {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .division-card.active .units-container {
-            max-height: 1000px;
-        }
-
-        .unit-item {
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-        }
-
-        .division-card.active .unit-item {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .card-header {
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .card-header:hover {
-            background: #f8f9fa;
-        }
-
-        .chevron {
-            transition: transform 0.3s ease;
-        }
-
-        .division-card.active .chevron {
-            transform: rotate(180deg);
+        @media (max-width: 768px) {
+            .division-group {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -90,7 +178,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-car-side"></i> Vehicle Tracking System</h1>
-            <p>Real-time monitoring kendaraan perusahaan</p>
+            <p>Real-time monitoring kendaraan Jamslogistik</p>
         </div>
 
         <div class="loading-container" id="loading">
@@ -115,7 +203,7 @@
 
         async function fetchData() {
             try {
-                const API_URL = 'YOUR_APPSCRIPT_URL';
+                const API_URL = 'https://script.google.com/macros/s/AKfycbyq_wsHOT3TI8-Tk31YiA_vPDAl5j_cIci0ztoV1AgAcnWay1DEzrEBoo1jrY7DkdLo/exec';
                 const response = await fetch(API_URL);
                 const data = await response.json();
                 
@@ -140,8 +228,10 @@
                 divisionCard.className = 'division-card';
                 divisionCard.innerHTML = `
                     <div class="card-header">
-                        <i class="fas fa-truck"></i>
-                        <h2>${formattedDivisionName.toUpperCase()}</h2>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-truck"></i>
+                            <h2>${formattedDivisionName.toUpperCase()}</h2>
+                        </div>
                         <i class="fas fa-chevron-down chevron"></i>
                     </div>
                     <div class="units-container">
