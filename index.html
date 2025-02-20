@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Perbaikan Mobil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <h2>Riwayat Perbaikan Mobil</h2>
+    <div id="info"></div>
+    <table>
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Jenis Perbaikan</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="data-table"></tbody>
+    </table>
+    
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const idMobil = urlParams.get('id');
+
+        if (idMobil) {
+            fetch(`https://script.google.com/macros/s/AKfycbw_cJQ_8RNK-W-QElB6ziSwHS8k7iNddOsjFBj0vpD6pcthvDUHzJRokJsNtdlBANc/exec?id=${idMobil}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        document.getElementById("info").innerHTML = `<h3>Mobil ID: ${idMobil}</h3>`;
+                        let rows = "";
+                        data.forEach(item => {
+                            rows += `<tr>
+                                <td>${item.tanggal}</td>
+                                <td>${item.jenis}</td>
+                                <td>${item.status}</td>
+                            </tr>`;
+                        });
+                        document.getElementById("data-table").innerHTML = rows;
+                    } else {
+                        document.getElementById("info").innerHTML = `<p>Data tidak ditemukan.</p>`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("info").innerHTML = `<p>Error mengambil data.</p>`;
+                    console.error("Error fetching data:", error);
+                });
+        } else {
+            document.getElementById("info").innerHTML = `<p>ID Mobil tidak ditemukan.</p>`;
+        }
+    </script>
+</body>
+</html>
