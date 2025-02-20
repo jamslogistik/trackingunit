@@ -37,7 +37,7 @@
         .header {
             text-align: center;
             padding: 2rem;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, #1a252f 100%);
             color: white;
             border-radius: 10px;
             margin-bottom: 2rem;
@@ -45,63 +45,58 @@
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin-bottom: 0.5rem;
         }
 
-        .header p {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-
         .division-group {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
         }
 
         .division-card {
             background: var(--card-bg);
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .division-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
         }
 
         .card-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, #2c3e50 100%);
+            color: white;
+            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem;
-            background: var(--primary);
-            color: white;
-            cursor: pointer;
-            transition: background 0.3s ease;
         }
 
-        .card-header:hover {
-            background: #1a252f;
-        }
-
-        .card-header h2 {
-            margin: 0;
-            font-size: 1.25rem;
+        .card-header-content {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
 
-        .card-header i {
-            font-size: 1.5rem;
+        .card-icon {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
         }
 
         .chevron {
             transition: transform 0.3s ease;
+            font-size: 1.2rem;
         }
 
         .division-card.active .chevron {
@@ -119,17 +114,23 @@
             padding: 1.5rem;
         }
 
+        .units-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
         .unit-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            margin: 0.5rem 0;
             background: var(--background);
-            border-radius: 8px;
+            border-radius: 10px;
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             opacity: 0;
             transform: translateY(-10px);
             transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .division-card.active .unit-item {
@@ -137,18 +138,29 @@
             transform: translateY(0);
         }
 
+        .unit-name {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
         .track-btn {
             background: var(--accent);
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
             cursor: pointer;
-            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease;
+            width: 100%;
+            justify-content: center;
         }
 
         .track-btn:hover {
-            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
         }
 
         .loading-container {
@@ -179,20 +191,26 @@
             animation: loader 1.2s linear infinite;
         }
 
-        .loader div:nth-child(1) { left: 8px; animation-delay: 0s; }
-        .loader div:nth-child(2) { left: 32px; animation-delay: 0.4s; }
-        .loader div:nth-child(3) { left: 56px; animation-delay: 0.8s; }
-
         @keyframes loader {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-20px); }
+        }
+
+        @media (max-width: 768px) {
+            .division-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-car-side"></i> Vehicle Tracking System</h1>
+            <h1><i class="fas fa-car-side"></i> Vehicle Tracking</h1>
             <p>Real-time monitoring kendaraan Jamslogistik</p>
         </div>
 
@@ -210,10 +228,19 @@
     </div>
 
     <script>
-        const COLORS = {
-            'GUDANG': '#3498db',
-            'CP SUKA': '#e67e22',
-            'HYBRID': '#2ecc71'
+        const DIVISION_THEMES = {
+            'GUDANG': {
+                color: '#3498db',
+                icon: 'warehouse'
+            },
+            'CP SUKA': {
+                color: '#e67e22',
+                icon: 'truck-moving'
+            },
+            'HYBRID': {
+                color: '#2ecc71',
+                icon: 'charging-station'
+            }
         };
 
         async function fetchData() {
@@ -238,44 +265,58 @@
             
             for(const [divisionName, units] of Object.entries(data)) {
                 const formattedDivisionName = divisionName.replace(/_/g, ' ');
+                const theme = DIVISION_THEMES[divisionName.toUpperCase()];
                 
                 const divisionCard = document.createElement('div');
                 divisionCard.className = 'division-card';
                 divisionCard.innerHTML = `
-                    <div class="card-header">
-                        <h2><i class="fas fa-truck"></i> ${formattedDivisionName.toUpperCase()}</h2>
+                    <div class="card-header" style="background: linear-gradient(135deg, ${theme.color} 0%, ${shadeColor(theme.color, -20)} 100%)">
+                        <div class="card-header-content">
+                            <i class="fas fa-${theme.icon} card-icon"></i>
+                            <div>
+                                <div class="card-title">${formattedDivisionName.toUpperCase()}</div>
+                                <small>${units.length} Unit Tersedia</small>
+                            </div>
+                        </div>
                         <i class="fas fa-chevron-down chevron"></i>
                     </div>
                     <div class="units-container">
-                        ${units.map((unit, index) => `
-                            <div class="unit-item" style="transition-delay: ${index * 0.1}s">
-                                <span>${unit.name}</span>
-                                <button 
-                                    class="track-btn" 
-                                    onclick="window.open('${unit.link}', '_blank')"
-                                    style="background: ${COLORS[divisionName.toUpperCase()]}">
-                                    <i class="fas fa-map-marker-alt"></i> Track
-                                </button>
-                            </div>
-                        `).join('')}
+                        <div class="units-grid">
+                            ${units.map((unit, index) => `
+                                <div class="unit-item" style="transition-delay: ${index * 0.1}s">
+                                    <div class="unit-name">${unit.name}</div>
+                                    <button 
+                                        class="track-btn"
+                                        onclick="window.open('${unit.link}', '_blank')"
+                                        style="background: ${theme.color}">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Lacak Sekarang
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 `;
                 
-                // Tambahkan efek klik
                 const header = divisionCard.querySelector('.card-header');
                 header.addEventListener('click', () => {
-                    // Tutup semua card yang terbuka
                     document.querySelectorAll('.division-card.active').forEach(card => {
-                        if (card !== divisionCard) {
-                            card.classList.remove('active');
-                        }
+                        if (card !== divisionCard) card.classList.remove('active');
                     });
-                    // Buka/tutup card yang diklik
                     divisionCard.classList.toggle('active');
                 });
 
                 container.appendChild(divisionCard);
             }
+        }
+
+        function shadeColor(color, percent) {
+            const num = parseInt(color.replace("#",""),16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return `#${(1 << 24 | (R < 255 ? R < 1 ? 0 : R : 255) << 16 | (G < 255 ? G < 1 ? 0 : G : 255) << 8 | (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)}`;
         }
 
         fetchData();
