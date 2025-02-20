@@ -1,73 +1,134 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riwayat Perbaikan Mobil</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-    </style>
-</head>
-<body>
-    <h2>Riwayat Perbaikan Mobil</h2>
-    <div id="info"></div>
-    <table>
-        <thead>
-            <tr>
-                <th>Tanggal</th>
-                <th>Jenis Perbaikan</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody id="data-table"></tbody>
-    </table>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Tracking System</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
     
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const idMobil = urlParams.get('id');
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      min-height: 100vh;
+    }
 
-        if (idMobil) {
-            fetch(`https://script.google.com/macros/s/AKfycbw_cJQ_8RNK-W-QElB6ziSwHS8k7iNddOsjFBj0vpD6pcthvDUHzJRokJsNtdlBANc/exec?id=${idMobil}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length > 0) {
-                        document.getElementById("info").innerHTML = `<h3>Mobil ID: ${idMobil}</h3>`;
-                        let rows = "";
-                        data.forEach(item => {
-                            rows += `<tr>
-                                <td>${item.tanggal}</td>
-                                <td>${item.jenis}</td>
-                                <td>${item.status}</td>
-                            </tr>`;
-                        });
-                        document.getElementById("data-table").innerHTML = rows;
-                    } else {
-                        document.getElementById("info").innerHTML = `<p>Data tidak ditemukan.</p>`;
-                    }
-                })
-                .catch(error => {
-                    document.getElementById("info").innerHTML = `<p>Error mengambil data.</p>`;
-                    console.error("Error fetching data:", error);
-                });
-        } else {
-            document.getElementById("info").innerHTML = `<p>ID Mobil tidak ditemukan.</p>`;
-        }
-    </script>
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .neon-text {
+      text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    }
+
+    .gradient-btn {
+      background: linear-gradient(45deg, #00c6ff, #0072ff);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gradient-btn:hover::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body class="text-gray-100">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold mb-2 neon-text">
+        <i class="fas fa-satellite-dish mr-3"></i>Real-Time Vehicle Tracking
+      </h1>
+      <p class="text-gray-400">Monitor semua unit kendaraan secara live</p>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="flex flex-wrap gap-4 mb-8 justify-center">
+      <button onclick="filterDivision('GUDANG')" class="glass-card px-6 py-2 hover:bg-blue-500/20">
+        <i class="fas fa-warehouse mr-2"></i>Gudang
+      </button>
+      <button onclick="filterDivision('CP SUKA')" class="glass-card px-6 py-2 hover:bg-pink-500/20">
+        <i class="fas fa-heart mr-2"></i>CP Suka
+      </button>
+      <button onclick="filterDivision('HYBRID')" class="glass-card px-6 py-2 hover:bg-green-500/20">
+        <i class="fas fa-leaf mr-2"></i>Hybrid
+      </button>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="text-center text-2xl">
+      <i class="fas fa-spinner fa-spin"></i> Memuat data...
+    </div>
+
+    <!-- Data Container -->
+    <div id="data" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+  </div>
+
+<script>
+  const API_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+
+  // Card Template
+  const createCard = (unit, link) => `
+    <div class="glass-card p-6">
+      <div class="flex items-center mb-4">
+        <div class="bg-blue-500/20 p-3 rounded-full">
+          <i class="fas fa-car-side text-xl text-blue-400"></i>
+        </div>
+        <h2 class="text-xl font-semibold ml-3">${unit}</h2>
+      </div>
+      <a href="${link}" target="_blank" 
+         class="gradient-btn px-6 py-2 rounded-full font-medium flex items-center justify-center gap-2">
+        <i class="fas fa-map-marked-alt"></i>
+        Live Tracking
+      </a>
+    </div>
+  `;
+
+  // Fetch Data
+  async function fetchData(sheetName) {
+    try {
+      const response = await fetch(`${API_URL}?sheetName=${sheetName}`);
+      return await response.json();
+    } catch (error) {
+      console.error('Error:', error);
+      return [];
+    }
+  }
+
+  // Filter Data by Division
+  async function filterDivision(division) {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('data').innerHTML = '';
+    
+    const data = await fetchData(division);
+    const container = document.getElementById('data');
+    
+    data.forEach(([unit, link]) => {
+      container.innerHTML += createCard(unit, link);
+    });
+    
+    document.getElementById('loading').style.display = 'none';
+  }
+
+  // Initial Load
+  window.onload = () => filterDivision('GUDANG');
+</script>
 </body>
 </html>
