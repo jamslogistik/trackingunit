@@ -211,7 +211,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-car-side"></i> Vehicle Tracking</h1>
-            <p>Real-time monitoring kendaraan Jamslogistik</p>
+            <p>Real-time monitoring kendaraan perusahaan</p>
         </div>
 
         <div class="loading-container" id="loading">
@@ -263,9 +263,18 @@
         function renderData(data) {
             const container = document.getElementById('divisions-container');
             
+            // Pastikan data sesuai dengan struktur yang diharapkan
+            if (!data || typeof data !== 'object') {
+                console.error('Data tidak valid:', data);
+                return;
+            }
+
             for(const [divisionName, units] of Object.entries(data)) {
                 const formattedDivisionName = divisionName.replace(/_/g, ' ');
-                const theme = DIVISION_THEMES[divisionName.toUpperCase()];
+                const theme = DIVISION_THEMES[divisionName.toUpperCase()] || {
+                    color: '#3498db',
+                    icon: 'truck'
+                };
                 
                 const divisionCard = document.createElement('div');
                 divisionCard.className = 'division-card';
