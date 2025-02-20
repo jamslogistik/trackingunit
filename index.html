@@ -82,7 +82,7 @@
   </div>
 
 <script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbwF7XOuvvBTVUrQgjxofVanRX713C7NC1-FXNPeqeWP73iZyZU-D9KC_gggCOo1t86I/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbynce2luAumI5w2WpTG6LJev3v_Y__410DnMNdMGPcxTQjv9Er_iMkER6YC6cSqxpCs/exec';
 
   // Card Template
   const createCard = (unit, link) => `
@@ -102,9 +102,9 @@
   `;
 
   // Fetch Data
-  async function fetchData(sheetName) {
+  async function fetchData() {
     try {
-      const response = await fetch(`${API_URL}?sheetName=${sheetName}`);
+      const response = await fetch(API_URL);
       return await response.json();
     } catch (error) {
       console.error('Error:', error);
@@ -117,11 +117,13 @@
     document.getElementById('loading').style.display = 'block';
     document.getElementById('data').innerHTML = '';
     
-    const data = await fetchData(division);
+    const data = await fetchData();
     const container = document.getElementById('data');
     
-    data.forEach(([unit, link]) => {
-      container.innerHTML += createCard(unit, link);
+    data.forEach(([unit, devisi, link]) => {
+      if (devisi === division) {
+        container.innerHTML += createCard(unit, link);
+      }
     });
     
     document.getElementById('loading').style.display = 'none';
