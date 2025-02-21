@@ -150,6 +150,12 @@
             z-index: 999;
         }
 
+         .unit-item span.unit-number {
+            font-weight: bold;
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -168,12 +174,12 @@
                 grid-template-columns: 1fr;
             }
         }
-    </style>
+   </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-truck"></i> Vehicle Tracking</h1>
+            <h1><i class="fas fa-truck"></i> vehicle Tracking</h1>
             <p>Real-time monitoring kendaraan Jamslogistik</p>
         </div>
 
@@ -195,11 +201,16 @@
 
     <script>
         const DIVISION_COLORS = {
-            'GUDANG': '#2ecc71',  // Hijau
+            'GUDANG': '#2ecc71',  // Biru
             'HYBRID': '#2ecc71',  // Hijau
-            'CP SUKA': '#2ecc71', // Hijau
+            'LOGISTIK': '#2ecc71', // Oranye
             // Tambahkan divisi lain di sini
         };
+
+        // Fungsi untuk mendapatkan warna divisi
+        function getDivisionColor(divisionName) {
+            return DIVISION_COLORS[divisionName.toUpperCase()] || '#2ecc71'; // Default ungu jika divisi tidak ditemukan
+        }
 
         // Fungsi untuk menampilkan popup
         function showPopup() {
@@ -212,11 +223,6 @@
                 popup.style.display = 'none';
                 overlay.style.display = 'none';
             }, 3000);
-        }
-
-     // Fungsi untuk mendapatkan warna divisi
-        function getDivisionColor(divisionName) {
-            return DIVISION_COLORS[divisionName.toUpperCase()] || '#2ecc71'; // Default HIJAU jika divisi tidak ditemukan
         }
 
         async function fetchData() {
@@ -250,15 +256,15 @@
                         <i class="fas fa-truck"></i>
                         <h2>${divisionName}</h2>
                     </div>
-                    ${units.map(unit => {
+                    ${units.map((unit, index) => {
                         const hasLink = unit.link && unit.link.trim() !== '';
                         const buttonColor = hasLink ? divisionColor : '#e74c3c';
                         const icon = hasLink ? 'fa-map-marker-alt' : 'fa-exclamation-triangle';
-                         const text = hasLink ? 'Track' : 'Track';
-        
+                        const text = hasLink ? 'Track' : 'Error';
 
                         return `
                         <div class="unit-item">
+                            <span class="unit-number">${index + 1}.</span>
                             <span>${unit.name}</span>
                             <button 
                                 class="track-btn ${!hasLink ? 'disabled' : ''}" 
