@@ -260,11 +260,11 @@
                         const hasLink = unit.link && unit.link.trim() !== '';
                         const buttonColor = hasLink ? divisionColor : '#e74c3c';
                         const icon = hasLink ? 'fa-map-marker-alt' : 'fa-exclamation-triangle';
-                        const text = hasLink ? 'Track' : 'Error';
+                        const text = hasLink ? 'Track' : 'Track';
 
                         return `
                         <div class="unit-item">
-                            <span class="unit-number">${index + 1}.</span>
+                            <span class="unit-number">${index + 1}</span>
                             <span>${unit.name}</span>
                             <button 
                                 class="track-btn ${!hasLink ? 'disabled' : ''}" 
